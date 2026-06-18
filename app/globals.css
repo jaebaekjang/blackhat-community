@@ -1,0 +1,84 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --font-mono: "Courier New", ui-monospace, monospace;
+}
+
+@layer base {
+  html {
+    color-scheme: dark;
+  }
+
+  body {
+    @apply bg-ink text-ash antialiased;
+    background-image:
+      radial-gradient(circle at 50% -10%, rgba(200, 30, 44, 0.08), transparent 55%),
+      repeating-linear-gradient(
+        0deg,
+        rgba(255, 255, 255, 0.012) 0px,
+        rgba(255, 255, 255, 0.012) 1px,
+        transparent 1px,
+        transparent 3px
+      );
+    min-height: 100vh;
+  }
+
+  ::selection {
+    background: rgba(200, 30, 44, 0.4);
+    color: #fff;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4 {
+    @apply text-zinc-100;
+    letter-spacing: -0.01em;
+  }
+
+  /* 얇은 스크롤바 */
+  ::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+  }
+  ::-webkit-scrollbar-track {
+    background: #0c0c0f;
+  }
+  ::-webkit-scrollbar-thumb {
+    background: #2a2a31;
+    border-radius: 4px;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background: #3a3a44;
+  }
+}
+
+@layer components {
+  /* 사건번호 등 라벨용 모노 텍스트 */
+  .case-no {
+    font-family: var(--font-mono);
+    @apply tracking-widest text-blood;
+  }
+
+  /* 카드 공통 */
+  .panel {
+    @apply rounded-xl border border-line bg-surface shadow-card;
+  }
+
+  /* 입력 공통 */
+  .field {
+    @apply w-full rounded-lg border border-line bg-ink-800 px-3 py-2 text-sm text-zinc-100
+      placeholder:text-ash-faint focus:border-blood/60 focus:outline-none focus:ring-1 focus:ring-blood/40;
+  }
+
+  .field-label {
+    @apply mb-1.5 block text-sm font-medium text-ash;
+  }
+
+  /* 가로 스크롤 테이블 래퍼 */
+  .table-scroll {
+    @apply w-full overflow-x-auto;
+  }
+}
