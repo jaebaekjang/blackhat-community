@@ -1,0 +1,48 @@
+name: Deploy to Vercel
+
+# 수동 실행 전용(workflow_dispatch) — VERCEL_TOKEN 시크릿이 등록된 뒤 실행하세요.
+# GitHub Actions 러너는 Vercel 에 접속 가능하므로 여기서 실제 배포가 이루어집니다.
+on:
+  workflow_dispatch:
+    inputs:
+      production:
+        description: "프로덕션으로 배포 (false 면 프리뷰)"
+        type: boolean
+        default: true
+
+jobs:
+  deploy:
+    name: Deploy
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Install Vercel CLI
+        run: npm i -g vercel@latest
+
+      - name: Deploy to Vercel
+        id: deploy
+        env:
+          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+          # (선택) 팀 스코프/기존 프로젝트에 붙이려면 추가 시크릿 사용
+          VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+          VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
+        run: |
+          if [ -z "$VERCEL_TOKEN" ]; then
+            echo "::error::VERCEL_TOKEN 시크릿이 필요합니다. 저장소 Settings → Secrets and variables → Actions 에 등록하세요."
+            exit 1
+          fi
+          if [ "${{ inputs.production }}" = "true" ]; then PROD="--prod"; else PROD=""; fi
+          # --yes: 비대화형으로 프로젝트 자동 생성/링크 후 배포. 배포 URL을 stdout 으로 반환.
+          URL=$(vercel deploy $PROD --yes --token="$VERCEL_TOKEN")
+          echo "url=$URL" >> "$GITHUB_OUTPUT"
+          echo "🚀 배포 완료: $URL"
+          {
+            echo "## ✅ Vercel 배포 완료"
+            echo ""
+            echo "**URL:** $URL"
+          } >> "$GITHUB_STEP_SUMMARY"
